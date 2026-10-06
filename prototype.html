@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brewkery · Android Developer Take-Home Assessment</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Cabinet+Grotesk:wght@700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .phone-frame * {
+      user-select: none;
+    }
+    .font-display { font-family: 'Cabinet Grotesk', sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+    :root {
+      --espresso: #140b07;
+      --terracotta: #d9532f;
+      --crema: #fdfaf7;
+      --border: #ebd8cb;
+    }
+
+    body {
+      background: #0d0805;
+      color: #f7ebe1;
+    }
+
+    .ambient-glow {
+      position: fixed;
+      top: -10%;
+      right: -10%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(217, 83, 47, 0.12) 0%, rgba(13, 8, 5, 0) 70%);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* Authentic Android Smartphone Frame */
+    .phone-frame {
+      width: 395px;
+      height: 800px;
+      background: #140b07;
+      border: 8px solid #2d1a12;
+      border-radius: 46px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 35px 80px -15px rgba(0, 0, 0, 0.9), 0 0 40px rgba(217, 83, 47, 0.18);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .custom-scrollbar::-webkit-scrollbar { display: none; }
+    .custom-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    .glow-terracotta {
+      box-shadow: 0 0 25px rgba(217, 83, 47, 0.35);
+    }
+    
+    .gradient-terracotta {
+      background: linear-gradient(135deg, #d9532f 0%, #b84121 50%, #8c2b12 100%);
+    }
+
+    .btn-press {
+      transition: transform 0.12s ease, filter 0.12s ease;
+    }
+    .btn-press:active {
+      transform: scale(0.96);
+      filter: brightness(0.92);
+    }
+
+    .android-camera-hole {
+      width: 10px;
+      height: 10px;
+      background: #000;
+      border-radius: 50%;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.15);
+    }
+
+    .android-gesture-pill {
+      width: 68px;
+      height: 4px;
+      background: #140b07;
+      opacity: 0.35;
+      border-radius: 999px;
+    }
+
+    .app-viewport {
+      background: #fdfaf7;
+      color: #231710;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-3 sm:p-6">
+
+  <div class="ambient-glow"></div>
+
+  <!-- TOP PROTOTYPE CONTROL BAR -->
+  <header class="w-full max-w-4xl mb-4 text-center select-none">
+    <div class="flex flex-wrap items-center justify-between gap-3 bg-[#1c100a]/90 border border-[#3e2417] px-4 py-2.5 rounded-2xl mb-3 shadow-xl backdrop-blur-md">
+      <div class="flex items-center gap-2">
+        <span class="w-3 h-3 rounded-full bg-[#d9532f] animate-ping"></span>
+        <span class="text-xs font-black tracking-wider uppercase text-white">Clickretina · Android Developer Take-Home</span>
+        <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/30">~4-6 hrs · Time-Boxed</span>
+      </div>
+      
+      <div class="flex items-center gap-2">
+        <a href="#assignment-guide" class="px-3 py-1.5 rounded-full bg-[#d9532f]/20 hover:bg-[#d9532f]/30 border border-[#d9532f]/40 text-xs font-bold text-[#f59e0b] flex items-center gap-1.5 transition btn-press">
+          <i class="fa-solid fa-list-check text-[#f59e0b]"></i> Assignment Instructions
+        </a>
+        <button onclick="resetPrototype()" class="px-3 py-1.5 rounded-full bg-zinc-800 hover:bg-zinc-700 text-xs font-bold text-white flex items-center gap-1.5 transition btn-press">
+          <i class="fa-solid fa-rotate-left"></i> Reset
+        </button>
+      </div>
+    </div>
+
+    <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-white flex items-center justify-center gap-2 font-display">
+      <span>Build the</span>
+      <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#d9532f] to-[#f59e0b]">Brewkery App</span>
+    </h1>
+    <p class="text-xs text-[#a89486] mt-1">A native Android coffee & bakery app powered by a single API. Flow: <b>Menu</b> &rarr; <i>(Tap item)</i> &rarr; <b>Item Detail</b> &rarr; <i>(Add to Cart)</i> &rarr; <b>Cart</b> &rarr; <i>(Place Order)</i> &rarr; <b>Order Status</b></p>
+
+    <!-- Top Flow Step Switcher -->
+    <div class="flex flex-wrap justify-center gap-2 mt-3.5">
+      <button onclick="setScreen('menu')" class="screen-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[#d9532f] text-white shadow glow-terracotta transition btn-press" id="btn-menu">
+        1. Menu Catalog
+      </button>
+      <button onclick="openDetail(1)" class="screen-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-[#26160e] hover:bg-[#382015] text-[#ebd8cb] transition btn-press" id="btn-detail">
+        2. Item Detail
+      </button>
+      <button onclick="setScreen('cart')" class="screen-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-[#26160e] hover:bg-[#382015] text-[#ebd8cb] transition btn-press" id="btn-cart">
+        3. Cart & Checkout (<span id="top-cart-count">2</span>)
+      </button>
+      <button onclick="setScreen('order')" class="screen-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-[#26160e] hover:bg-[#382015] text-[#ebd8cb] transition btn-press" id="btn-order">
+        4. Order Placed
+      </button>
+    </div>
+  </header>
+
+  <!-- Real Android Smartphone Frame -->
+  <div class="phone-frame flex flex-col justify-between shadow-2xl relative">
+
+    <!-- Top Android Status Bar -->
+    <div class="w-full pt-3 px-6 pb-2 flex justify-between items-center text-xs font-semibold z-40 select-none bg-[#fdfaf7] text-[#140b07] border-b border-[#ebd8cb]/60">
+      <span class="text-[13px] font-bold">9:41</span>
+      
+      <!-- Camera Punch Hole -->
+      <div class="android-camera-hole"></div>
+
+      <div class="flex items-center gap-1.5 text-opacity-80">
+        <i class="fa-solid fa-signal text-[11px]"></i>
+        <i class="fa-solid fa-wifi text-[11px]"></i>
+        <i class="fa-solid fa-battery-full text-xs text-emerald-600"></i>
+      </div>
+    </div>
+
+    <!-- MAIN SCROLLABLE SCREEN VIEWPORT -->
+    <div id="screen-viewport" class="flex-1 overflow-y-auto custom-scrollbar relative px-4 pb-4 pt-2 space-y-4 app-viewport flex flex-col">
+
+      <!-- ========================================================= -->
+      <!-- SCREEN 1: MENU & CATALOG                                  -->
+      <!-- ========================================================= -->
+      <div id="view-menu" class="screen-view space-y-3.5 flex-1 flex flex-col">
+        
+        <!-- App Bar with Shop Branding & Live Cart Button -->
+        <div class="flex items-center justify-between pt-1">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-full bg-[#140b07] flex items-center justify-center text-white text-xs font-display font-black">
+              BK
+            </div>
+            <div>
+              <span class="text-[10px] text-[#786457] font-semibold block leading-tight">Fresh Roast & Bakes</span>
+              <h2 class="text-xs font-extrabold text-[#140b07]">Brewkery Artisans</h2>
+            </div>
+          </div>
+
+          <!-- Cart Icon Header Button -->
+          <button onclick="setScreen('cart')" class="relative flex items-center justify-center w-8 h-8 rounded-full bg-white border border-[#ebd8cb] shadow-sm btn-press">
+            <i class="fa-solid fa-bag-shopping text-xs text-[#140b07]"></i>
+            <span id="badge-cart-counter" class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#d9532f] text-white text-[9px] font-bold flex items-center justify-center">2</span>
+          </button>
+        </div>
+
+        <!-- HIGH-POLISH DYNAMIC STORE / ACTIVE ORDER CARD -->
+        <div id="home-status-banner" class="p-3 rounded-2xl bg-gradient-to-r from-[#faeee5] to-[#f7ebe1] border border-[#ebd8cb] text-xs shadow-sm transition-all flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-xl bg-white border border-[#ebd8cb] flex items-center justify-center text-sm shadow-sm" id="home-banner-icon-box">
+              🛵
+            </div>
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="text-[9px] font-black uppercase tracking-wider text-[#d9532f]" id="home-banner-tag">STORE INFO</span>
+                <span class="w-1.5 h-1.5 rounded-full bg-[#d9532f]"></span>
+              </div>
+              <strong class="text-xs text-[#140b07] block" id="home-banner-main">Delivery in 20 - 30 mins</strong>
+              <span class="text-[10px] text-[#786457]" id="home-banner-sub">$2.50 flat fee</span>
+            </div>
+          </div>
+          <span class="px-2.5 py-1 rounded-lg bg-white border border-[#ebd8cb] text-[10px] font-bold text-[#140b07]" id="home-banner-action">
+            Open
+          </span>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="relative">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-xs text-[#786457]"></i>
+          <input type="text" id="menu-search-input" onkeyup="filterMenuSearch()" placeholder="Search roast, cold brew, pastry..." class="w-full bg-white border border-[#ebd8cb] rounded-xl pl-8 pr-3 py-2 text-xs text-[#140b07] placeholder-[#786457] outline-none">
+        </div>
+
+        <!-- Categories Row -->
+        <div class="flex gap-1.5 overflow-x-auto custom-scrollbar pb-1 text-xs">
+          <button onclick="filterCategory('ALL')" id="cat-ALL" class="cat-filter-btn px-3 py-1.5 rounded-full bg-[#140b07] text-white font-bold whitespace-nowrap btn-press">
+            All Items
+          </button>
+          <button onclick="filterCategory('cat_hot_coffee')" id="cat-cat_hot_coffee" class="cat-filter-btn px-3 py-1.5 rounded-full bg-white border border-[#ebd8cb] text-[#786457] font-semibold whitespace-nowrap btn-press">
+            ☕ Hot Coffee
+          </button>
+          <button onclick="filterCategory('cat_cold_brews')" id="cat-cat_cold_brews" class="cat-filter-btn px-3 py-1.5 rounded-full bg-white border border-[#ebd8cb] text-[#786457] font-semibold whitespace-nowrap btn-press">
+            🧊 Cold Brews
+          </button>
+          <button onclick="filterCategory('cat_bakery')" id="cat-cat_bakery" class="cat-filter-btn px-3 py-1.5 rounded-full bg-white border border-[#ebd8cb] text-[#786457] font-semibold whitespace-nowrap btn-press">
+            🥐 Artisan Bakery
+          </button>
+        </div>
+
+        <!-- Menu Product List -->
+        <div id="catalog-items-container" class="space-y-2.5 flex-1">
+          <!-- Populated from storeData -->
+        </div>
+
+        <!-- Floating Cart Bar (Appears when items are in cart) -->
+        <div id="sticky-cart-bar" class="p-3 rounded-2xl bg-[#140b07] text-white flex items-center justify-between shadow-xl cursor-pointer btn-press mt-auto" onclick="setScreen('cart')">
+          <div class="flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-[#d9532f] flex items-center justify-center text-xs font-bold" id="floating-bar-qty">2</span>
+            <div>
+              <span class="text-[10px] text-[#ebd8cb] block leading-tight">View Your Cart</span>
+              <span class="text-xs font-extrabold text-white" id="floating-bar-subtotal">$9.40</span>
+            </div>
+          </div>
+          <span class="text-xs font-extrabold text-[#f59e0b] flex items-center gap-1">
+            Proceed to Checkout <i class="fa-solid fa-arrow-right text-[10px]"></i>
+          </span>
+        </div>
+
+      </div>
+
+      <!-- ========================================================= -->
+      <!-- SCREEN 2: ITEM DETAIL SCREEN                              -->
+      <!-- ========================================================= -->
+      <div id="view-detail" class="screen-view hidden space-y-3 flex-1 flex flex-col">
+        
+        <!-- Header Nav (Back button directly to Menu) -->
+        <div class="flex items-center justify-between pt-1">
+          <button onclick="setScreen('menu')" class="w-8 h-8 rounded-full bg-white border border-[#ebd8cb] flex items-center justify-center text-xs text-[#140b07] shadow-sm btn-press">
+            <i class="fa-solid fa-arrow-left"></i>
+          </button>
+          <span class="text-xs font-extrabold text-[#140b07] uppercase tracking-wider">Item Customizer</span>
+          <button onclick="toggleFavorite()" class="w-8 h-8 rounded-full bg-white border border-[#ebd8cb] flex items-center justify-center text-xs text-rose-500 shadow-sm btn-press">
+            <i class="fa-solid fa-heart" id="fav-icon"></i>
+          </button>
+        </div>
+
+        <!-- Hero Product Image -->
+        <div class="relative h-40 rounded-2xl overflow-hidden shadow-md">
+          <img id="detail-hero-img" src="" alt="Item" class="w-full h-full object-cover">
+          <span id="detail-hero-badge" class="absolute top-2 left-2 text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#140b07]/80 text-[#f59e0b] backdrop-blur-sm">
+            BESTSELLER
+          </span>
+        </div>
+
+        <!-- Title, Price & Description -->
+        <div>
+          <div class="flex items-center justify-between">
+            <h2 id="detail-item-name" class="text-base font-black text-[#140b07] font-display">Toasted Caramel Macchiato</h2>
+            <span id="detail-base-price" class="text-base font-extrabold text-[#d9532f] font-mono">$4.85</span>
+          </div>
+          <p id="detail-item-desc" class="text-[11px] text-[#786457] mt-0.5 leading-relaxed">
+            Rich espresso roast layered with velvety steamed milk, infused with house-made vanilla bean syrup and toasted caramel drizzle.
+          </p>
+        </div>
+
+        <!-- Ingredients Chips -->
+        <div>
+          <span class="text-[10px] font-black uppercase text-[#786457] tracking-wider block mb-1">Key Ingredients</span>
+          <div id="detail-ingredients-row" class="flex flex-wrap gap-1"></div>
+        </div>
+
+        <!-- 1. Size Selection -->
+        <div class="p-2.5 rounded-xl bg-white border border-[#ebd8cb] space-y-1.5">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-bold text-[#140b07]">Size Selection</span>
+          </div>
+          <div id="detail-sizes-row" class="grid grid-cols-3 gap-1.5"></div>
+        </div>
+
+        <!-- 2. Milk Options / Spreads -->
+        <div class="p-2.5 rounded-xl bg-white border border-[#ebd8cb] space-y-1.5">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-bold text-[#140b07]">Milk Options / Spreads</span>
+          </div>
+          <div id="detail-milk-row" class="space-y-1"></div>
+        </div>
+
+        <!-- 3. Sugar Levels / Serving -->
+        <div class="p-2.5 rounded-xl bg-white border border-[#ebd8cb] space-y-1.5">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-bold text-[#140b07]">Sugar Levels / Serving</span>
+          </div>
+          <div id="detail-sugar-row" class="flex gap-1.5 flex-wrap"></div>
+        </div>
+
+        <!-- Quantity Stepper & Add to Cart Action -->
+        <div class="pt-1 flex items-center gap-2 mt-auto">
+          <div class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white border border-[#ebd8cb]">
+            <button onclick="adjustDetailQty(-1)" class="text-xs font-black text-[#140b07] btn-press">-</button>
+            <span id="detail-qty-display" class="text-xs font-bold text-[#140b07] font-mono">1</span>
+            <button onclick="adjustDetailQty(1)" class="text-xs font-black text-[#140b07] btn-press">+</button>
+          </div>
+          
+          <button onclick="addToCartFromDetail()" class="flex-1 py-3 rounded-xl gradient-terracotta text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-lg btn-press">
+            <span>Add to Cart</span>
+            <span>•</span>
+            <span id="detail-calc-total-btn">$5.50</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- ========================================================= -->
+      <!-- SCREEN 3: CART & CHECKOUT SCREEN                          -->
+      <!-- ========================================================= -->
+      <div id="view-cart" class="screen-view hidden space-y-3.5 flex-1 flex flex-col">
+        
+        <!-- Header -->
+        <div class="flex items-center justify-between pt-1">
+          <button onclick="setScreen('menu')" class="w-8 h-8 rounded-full bg-white border border-[#ebd8cb] flex items-center justify-center text-xs text-[#140b07] shadow-sm btn-press">
+            <i class="fa-solid fa-arrow-left"></i>
+          </button>
+          <span class="text-xs font-extrabold text-[#140b07] uppercase tracking-wider">Your Cart</span>
+          <button onclick="clearCart()" class="text-[10px] font-bold text-rose-600 hover:underline btn-press">
+            Clear Cart
+          </button>
+        </div>
+
+        <!-- Cart Items -->
+        <div id="cart-items-list" class="space-y-2 flex-1">
+          <!-- Populated from in-memory cart -->
+        </div>
+
+        <!-- Bill Breakdown Card -->
+        <div class="p-3.5 rounded-2xl bg-white border border-[#ebd8cb] space-y-2 text-xs">
+          <div class="flex justify-between text-[#786457]">
+            <span>Subtotal</span>
+            <span id="bill-subtotal" class="font-mono text-[#140b07] font-semibold">$9.40</span>
+          </div>
+          <div class="flex justify-between text-[#786457]">
+            <span>Delivery Fee</span>
+            <span class="font-mono text-[#140b07] font-semibold">$2.50</span>
+          </div>
+          <div class="flex justify-between text-[#786457]">
+            <span>Est. Tax (8.0%)</span>
+            <span id="bill-tax" class="font-mono text-[#140b07] font-semibold">$0.75</span>
+          </div>
+          
+          <div class="pt-2 border-t border-dashed border-[#ebd8cb] flex justify-between items-center text-sm font-black text-[#140b07]">
+            <span>Total Payable</span>
+            <span id="bill-total" class="text-base text-[#d9532f] font-mono">$12.65</span>
+          </div>
+        </div>
+
+        <!-- Checkout Action Button -->
+        <button onclick="placeOrderFinal()" class="w-full py-3.5 rounded-xl gradient-terracotta text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-xl glow-terracotta btn-press">
+          <i class="fa-solid fa-lock text-[10px]"></i>
+          <span>Place Order Now</span>
+          <span>•</span>
+          <span id="btn-place-order-total">$12.65</span>
+        </button>
+
+      </div>
+
+      <!-- ========================================================= -->
+      <!-- SCREEN 4: ORDER PLACED SCREEN                             -->
+      <!-- ========================================================= -->
+      <div id="view-order" class="screen-view hidden space-y-4 text-center py-4 flex-1 flex flex-col justify-between">
+        
+        <div>
+          <!-- Animated Mug Badge -->
+          <div class="w-20 h-20 mx-auto rounded-full bg-[#f7ebe1] border-2 border-[#d9532f] flex items-center justify-center text-3xl text-[#d9532f] shadow-lg mb-3">
+            ☕
+          </div>
+
+          <span class="text-[10px] font-black uppercase tracking-wider text-[#d9532f] block">Order Dispatched</span>
+          <h2 class="text-xl font-black text-[#140b07] font-display">Brewing in Progress!</h2>
+          <p class="text-xs text-[#786457] max-w-[240px] mx-auto mt-1 leading-relaxed">
+            Your ticket was dispatched to our barista.
+          </p>
+        </div>
+
+        <!-- Ticket Card -->
+        <div class="p-4 rounded-2xl bg-white border border-[#ebd8cb] text-left space-y-2.5 text-xs">
+          <div class="flex justify-between items-center pb-2 border-b border-[#ebd8cb]/60">
+            <div>
+              <span class="text-[9px] text-[#786457] uppercase font-bold block">Order Ticket</span>
+              <strong class="font-mono text-sm text-[#140b07]" id="order-ref-code">#BK-74921</strong>
+            </div>
+            <span class="px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 text-[10px] font-black animate-pulse">
+              PREPARING
+            </span>
+          </div>
+
+          <div class="flex justify-between text-[#786457]">
+            <span>Estimated Wait:</span>
+            <strong class="text-[#d9532f]">20 - 30 minutes</strong>
+          </div>
+          
+          <div class="flex justify-between text-[#786457]">
+            <span>Items Ordered:</span>
+            <span class="font-semibold text-[#140b07]" id="order-summary-qty">2 Items</span>
+          </div>
+
+          <div class="pt-2 border-t border-[#ebd8cb]/60 text-[#786457]">
+            <span class="text-[10px] block mb-0.5">Status:</span>
+            <strong class="text-emerald-700 block">Barista accepted your order!</strong>
+          </div>
+        </div>
+
+        <!-- Return Back to Menu Button -->
+        <button onclick="setScreen('menu')" class="w-full py-3.5 rounded-xl bg-[#140b07] text-white font-extrabold text-xs btn-press shadow-md">
+          Back to Menu
+        </button>
+
+      </div>
+
+    </div>
+
+    <!-- Android Gesture Navigation Pill at Bottom -->
+    <div class="h-5 bg-[#fdfaf7] flex items-center justify-center pb-1">
+      <div class="android-gesture-pill"></div>
+    </div>
+
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- STEP-BY-STEP INSTRUCTIONS & HOW TO SUBMIT                 -->
+  <!-- ========================================================= -->
+  <section id="assignment-guide" class="w-full max-w-4xl mt-12 bg-[#140b07] border border-[#3e2417] rounded-3xl p-6 sm:p-10 text-white shadow-2xl space-y-8">
+    
+    <div>
+      <div class="inline-flex items-center gap-2 bg-[#2d1a12] px-3.5 py-1.5 rounded-full text-xs font-bold text-[#f59e0b] mb-3">
+        <i class="fa-solid fa-code"></i> Clickretina · Android Developer Take-Home
+      </div>
+      <h2 class="text-2xl sm:text-3xl font-black font-display text-white">
+        Build it — step by step
+      </h2>
+      <p class="text-xs sm:text-sm text-[#ebd8cb]/80 mt-1">Just follow these simple instructions:</p>
+    </div>
+
+    <!-- Step Checklist -->
+    <div class="bg-[#1c100a] border border-[#3e2417] rounded-2xl p-5 space-y-3 text-xs text-[#cbd5e1]">
+      <ul class="space-y-2.5 list-disc list-inside">
+        <li>Create a new Android project in Kotlin (Android Studio).</li>
+        <li>Add Retrofit + coroutines and fetch the JSON from the API URL below.</li>
+        <li><strong>Screen 1 — Home / Menu:</strong> show the categories row and the items list (thumbnail, badge, title, rating, base price). Includes the store announcement banner (and active order tracking once placed).</li>
+        <li><strong>Screen 2 — Item Detail:</strong> tap an item &rarr; hero image, info, ingredients, and dynamic customizations (<code>sizes</code>, <code>milk_options</code>, <code>sugar_levels</code>) with price recalculation.</li>
+        <li><strong>Screen 3 — Cart:</strong> tap cart &rarr; items list with quantities, subtotal + $2.50 delivery + 8% tax calculation.</li>
+        <li><strong>Screen 4 — Order Status:</strong> place order &rarr; clear cart, generate ticket ID, and show <code>PREPARING</code> status.</li>
+        <li>Load all images from their URLs with Coil or Glide.</li>
+        <li>Show a loading state and an error message for the network call.</li>
+        <li>Write at least one unit test.</li>
+        <li>Use AI tools (Claude, Cursor, Copilot, Gemini) throughout — that's expected here.</li>
+        <li>Add a README (below) and push everything to a public GitHub repo.</li>
+      </ul>
+    </div>
+
+    <!-- Architecture Note on Database -->
+    <div class="bg-[#24130b] border-2 border-[#d9532f] rounded-2xl p-4 sm:p-5 text-xs text-[#ebd8cb] space-y-2">
+      <div class="flex items-center gap-2 text-[#f59e0b] font-bold text-sm">
+        <i class="fa-solid fa-database"></i>
+        <span>Important Architecture Note: Database Usage</span>
+      </div>
+      <p class="leading-relaxed">
+        <strong>No SQLite or Room database is required.</strong> When the app closes, it is completely fine if the cart resets. If you choose to integrate local persistence like Room/SQLite, that will be considered a bonus.
+      </p>
+    </div>
+
+    <!-- The One Extra Thing: AI Workflow -->
+    <div class="bg-gradient-to-r from-[#26140b] to-[#1c100a] border border-[#d9532f]/60 rounded-2xl p-6 space-y-3 text-xs text-[#ebd8cb]">
+      <div class="flex items-center gap-2 text-white font-bold text-sm font-display">
+        <span class="text-lg">🤖</span>
+        <span>The one extra thing: README · how you used AI</span>
+      </div>
+      <p class="text-[#cbd5e1] leading-relaxed">
+        Add a short README to your repo that shows how you worked with AI:
+      </p>
+      <ul class="list-disc list-inside space-y-1.5 text-[#cbd5e1]">
+        <li>Which AI tools you used.</li>
+        <li>2–3 of the actual prompts you sent.</li>
+        <li>One thing AI got right, and one thing it got wrong — and how you fixed it.</li>
+      </ul>
+      <p class="text-[11px] text-[#f59e0b] italic font-semibold">
+        This is an AI-first team — we want to see how you actually work with these tools.
+      </p>
+    </div>
+
+    <!-- API Endpoints Showcase (Developer Console Style) -->
+    <div class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-server text-[#d9532f]"></i>
+          <h3 class="text-xs font-black uppercase tracking-wider text-white font-mono">REST API Endpoints</h3>
+        </div>
+        <span class="text-[10px] text-[#a89486] font-mono">CORS Enabled • Static Raw JSON</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
+        
+        <!-- Endpoint 1: Full Menu -->
+        <div class="bg-[#180e09] border border-[#3e2417] hover:border-[#d9532f]/60 rounded-2xl p-4 flex flex-col justify-between transition-all duration-200 shadow-md">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-[#f59e0b] font-bold text-xs flex items-center gap-1.5 font-sans">
+                <span>1. Full Menu & Store Config</span>
+              </span>
+              <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-bold text-[9px] border border-emerald-500/30">GET 200</span>
+            </div>
+            
+            <p class="text-[11px] text-[#a89486] font-sans mb-3 leading-relaxed">
+              Returns shop metadata (fees, delivery estimates) and all 6 categorized menu items.
+            </p>
+
+            <div class="p-2.5 rounded-xl bg-[#0d0704] border border-[#2d180f] flex items-center justify-between gap-2 mb-3">
+              <span class="text-[11px] text-[#cbd5e1] break-all select-all font-mono leading-tight" id="endpoint-menu">https://raw.githubusercontent.com/VivekShah138/Brewkery/main/data.json</span>
+            </div>
+          </div>
+
+          <button onclick="copyRichText('endpoint-menu', this, 'Copied Menu URL!')" class="w-full py-2.5 rounded-xl bg-[#26160e] hover:bg-[#d9532f] text-white font-bold transition-all duration-200 flex items-center justify-center gap-2 btn-press border border-[#4a2b1c] hover:border-[#d9532f]">
+            <i class="fa-regular fa-copy text-xs"></i>
+            <span class="font-sans text-xs">Copy Menu URL</span>
+          </button>
+        </div>
+
+        <!-- Endpoint 2: Single Item -->
+        <div class="bg-[#180e09] border border-[#3e2417] hover:border-[#d9532f]/60 rounded-2xl p-4 flex flex-col justify-between transition-all duration-200 shadow-md">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-[#f59e0b] font-bold text-xs flex items-center gap-1.5 font-sans">
+                <span>2. Single Item Detail by ID</span>
+              </span>
+              <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-bold text-[9px] border border-emerald-500/30">GET 200</span>
+            </div>
+            
+            <p class="text-[11px] text-[#a89486] font-sans mb-3 leading-relaxed">
+              Returns root item resource (e.g. <code>api/items/1.json</code> to <code>api/items/6.json</code>).
+            </p>
+
+            <div class="p-2.5 rounded-xl bg-[#0d0704] border border-[#2d180f] flex items-center justify-between gap-2 mb-3">
+              <span class="text-[11px] text-[#cbd5e1] break-all select-all font-mono leading-tight" id="endpoint-item">https://raw.githubusercontent.com/VivekShah138/Brewkery/main/api/items/{id}.json</span>
+            </div>
+          </div>
+
+          <button onclick="copyRichText('endpoint-item', this, 'Copied Item URL Pattern!')" class="w-full py-2.5 rounded-xl bg-[#26160e] hover:bg-[#d9532f] text-white font-bold transition-all duration-200 flex items-center justify-center gap-2 btn-press border border-[#4a2b1c] hover:border-[#d9532f]">
+            <i class="fa-regular fa-copy text-xs"></i>
+            <span class="font-sans text-xs">Copy Item Pattern</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- How to submit -->
+    <div class="bg-[#1c100a] border border-[#3e2417] rounded-2xl p-6 space-y-4 text-xs text-[#cbd5e1]">
+      <h3 class="text-sm font-bold text-white font-display">How to submit — share your app with us</h3>
+      <ol class="list-decimal list-inside space-y-2">
+        <li>Push your code to a public GitHub repository and copy the repo link.</li>
+        <li>Build a debug APK so we can install and try it. In Android Studio: <code>Build &rarr; Build Bundle(s) / APK(s) &rarr; Build APK(s)</code>. Or run <code>./gradlew assembleDebug</code> — find it in <code>app/build/outputs/apk/debug/</code>.</li>
+        <li>Make sure the README (with the AI section) is in the repo.</li>
+        <li>Optional but appreciated: a 1–2 minute screen recording of the app running.</li>
+        <li>Email all of it — GitHub link + the APK (attach it, or a Google Drive link) + recording — to <a href="mailto:Hr@clickretina.co.in?subject=Brewkery%20Android%20Assignment%20Submission" class="text-[#f59e0b] font-bold underline">Hr@clickretina.co.in</a>.</li>
+      </ol>
+
+      <div class="pt-4 border-t border-[#3e2417] flex items-center justify-between flex-wrap gap-3">
+        <span class="text-[#f59e0b] font-bold text-xs">⏳ Deadline: within 1 day of receiving this assignment. Need more time? Just ask.</span>
+        
+        <div class="flex items-center gap-2">
+          <button onclick="copyDirectValue('Hr@clickretina.co.in', this, 'Copied Email!')" class="px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white font-bold transition flex items-center gap-1.5 btn-press">
+            <i class="fa-regular fa-copy text-xs"></i>
+            <span>Copy Email</span>
+          </button>
+          <a href="mailto:Hr@clickretina.co.in?subject=Brewkery%20Android%20Assignment%20Submission" class="px-4 py-1.5 rounded-lg bg-[#d9532f] text-white font-bold hover:bg-[#b84121] transition flex items-center gap-1.5">
+            <i class="fa-solid fa-paper-plane text-xs"></i>
+            <span>Hr@clickretina.co.in</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ground Rules -->
+    <div class="bg-[#140b07] border border-[#3e2417] rounded-2xl p-6 space-y-3 text-xs text-[#a89486]">
+      <h4 class="font-bold text-white text-xs uppercase tracking-wider font-display">Ground rules — A few honest notes</h4>
+      <ul class="list-disc list-inside space-y-1.5">
+        <li>Keep it to roughly 4–6 hours. Don't over-engineer.</li>
+        <li>Match the screens shown above — same app for everyone.</li>
+        <li>Use AI as much as you like, but understand your code; we'll go through it in the interview.</li>
+        <li>Stuck on something? Email us — how you ask is part of the signal.</li>
+      </ul>
+
+      <!-- Contact Helpline Box with 1-Click Copy Buttons -->
+      <div class="pt-3 border-t border-[#3e2417] flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="text-white font-semibold">Questions?</span>
+          
+          <!-- Email Chip with Copy -->
+          <div class="inline-flex items-center gap-1.5 bg-[#20120b] border border-[#3e2417] px-2.5 py-1 rounded-lg text-white">
+            <i class="fa-regular fa-envelope text-[#f59e0b]"></i>
+            <span id="contact-email-text">Hr@clickretina.co.in</span>
+            <button onclick="copyDirectValue('Hr@clickretina.co.in', this, 'Email Copied!')" class="text-[#a89486] hover:text-white ml-1 btn-press" title="Copy Email">
+              <i class="fa-regular fa-copy text-xs"></i>
+            </button>
+          </div>
+
+          <!-- Phone Chip with Copy -->
+          <div class="inline-flex items-center gap-1.5 bg-[#20120b] border border-[#3e2417] px-2.5 py-1 rounded-lg text-white">
+            <i class="fa-solid fa-phone text-emerald-400"></i>
+            <span id="contact-phone-text">+91 84710 78089</span>
+            <button onclick="copyDirectValue('+918471078089', this, 'Phone Copied!')" class="text-[#a89486] hover:text-white ml-1 btn-press" title="Copy Phone">
+              <i class="fa-regular fa-copy text-xs"></i>
+            </button>
+          </div>
+        </div>
+
+        <span class="text-white font-semibold">We read every submission — looking forward to seeing what you build.</span>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- Global Toast -->
+  <div id="toast" class="fixed top-6 left-1/2 -translate-x-1/2 z-50 transform -translate-y-24 opacity-0 transition-all duration-300 pointer-events-none">
+    <div class="bg-[#140b07] border border-[#ebd8cb] text-white px-4 py-2.5 rounded-2xl shadow-2xl flex items-center gap-2 text-xs font-bold">
+      <i class="fa-solid fa-circle-check text-emerald-400"></i>
+      <span id="toast-text">Notification</span>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT PROTOTYPE STATE ENGINE -->
+  <script>
+    const storeData = {
+      meta: { delivery_fee: 2.50, tax_rate_percent: 8.0, currency_symbol: "$" },
+      items: [
+        {
+          id: 1,
+          category_id: "cat_hot_coffee",
+          name: "Toasted Caramel Macchiato",
+          base_price: 4.85,
+          rating: 4.9,
+          reviews: 312,
+          badge: "BESTSELLER",
+          image_url: "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=600&auto=format&fit=crop&q=80",
+          desc: "Rich espresso roast layered with velvety steamed milk, infused with house-made vanilla bean syrup and marked with a buttery toasted caramel drizzle.",
+          ingredients: ["Signature Espresso", "Steamed Oat Milk", "Salted Caramel", "Bourbon Vanilla"],
+          customizations: {
+            sizes: [
+              { id: "sz_small", label: "Tall (8 oz)", extra_price: 0.00 },
+              { id: "sz_medium", label: "Grande (12 oz)", extra_price: 0.65 },
+              { id: "sz_large", label: "Venti (16 oz)", extra_price: 1.25 }
+            ],
+            sugar_levels: ["0% Unsweetened", "50% Mild", "100% Standard Sweet"],
+            milk_options: [
+              { id: "m_oat", name: "Oat Milk (Barista Blend)", extra_price: 0.00 },
+              { id: "m_almond", name: "Roasted Almond Milk", extra_price: 0.50 },
+              { id: "m_whole", name: "Organic Whole Milk", extra_price: 0.00 }
+            ]
+          }
+        },
+        {
+          id: 2,
+          category_id: "cat_cold_brews",
+          name: "Velvet Vanilla Cold Foam",
+          base_price: 5.40,
+          rating: 4.8,
+          reviews: 248,
+          badge: "STAFF PICK",
+          image_url: "https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?w=600&auto=format&fit=crop&q=80",
+          desc: "18-hour cold steeped Colombian beans topped with Madagascar vanilla sweet cream foam.",
+          ingredients: ["18hr Steeped Coffee", "Vanilla Sweet Cream", "Crushed Ice", "Raw Cane Sugar"],
+          customizations: {
+            sizes: [
+              { id: "sz_medium", label: "Regular (16 oz)", extra_price: 0.00 },
+              { id: "sz_large", label: "Large (24 oz)", extra_price: 0.95 }
+            ],
+            sugar_levels: ["Light Sweet", "Regular Sweet", "Extra Sweet"],
+            milk_options: [
+              { id: "m_sweet_foam", name: "Signature Sweet Cream", extra_price: 0.00 },
+              { id: "m_coconut_foam", name: "Toasted Coconut Foam", extra_price: 0.60 }
+            ]
+          }
+        },
+        {
+          id: 3,
+          category_id: "cat_bakery",
+          name: "Golden Normandy Croissant",
+          base_price: 3.90,
+          rating: 4.95,
+          reviews: 420,
+          badge: "FRESHLY BAKED",
+          image_url: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=600&auto=format&fit=crop&q=80",
+          desc: "36-layer flakey European butter pastry baked fresh at sunrise with crisp amber crust.",
+          ingredients: ["Normandy Butter (84%)", "Organic Flour", "Natural Yeast", "Sea Salt"],
+          customizations: {
+            sizes: [
+              { id: "sz_single", label: "Single Piece", extra_price: 0.00 },
+              { id: "sz_pair", label: "Pair Box (2 Pcs)", extra_price: 3.20 }
+            ],
+            sugar_levels: ["Warm & Crisp (Recommended)", "Room Temperature"],
+            milk_options: [
+              { id: "top_butter", name: "Whipped Honey Butter", extra_price: 0.50 },
+              { id: "top_jam", name: "Artisan Raspberry Jam", extra_price: 0.50 },
+              { id: "top_plain", name: "Classic (No Spread)", extra_price: 0.00 }
+            ]
+          }
+        },
+        {
+          id: 4,
+          category_id: "cat_bakery",
+          name: "Crushed Pistachio Danish",
+          base_price: 4.60,
+          rating: 4.75,
+          reviews: 184,
+          badge: "SEASONAL",
+          image_url: "https://images.unsplash.com/photo-1608198093002-ad4e005484ec?w=600&auto=format&fit=crop&q=80",
+          desc: "Laminated puff pastry filled with rich Sicilian pistachio custard and roasted emerald nuts.",
+          ingredients: ["Bronte Pistachio", "Vanilla Custard", "Puff Pastry"],
+          customizations: {
+            sizes: [
+              { id: "sz_single", label: "Single Danish", extra_price: 0.00 }
+            ],
+            sugar_levels: ["Freshly Warmed", "Room Temperature"],
+            milk_options: [
+              { id: "top_none", name: "Standard Glaze", extra_price: 0.00 },
+              { id: "top_extra_nuts", name: "Extra Toasted Pistachios", extra_price: 0.75 }
+            ]
+          }
+        }
+      ]
+    };
+
+    // State
+    let cart = [
+      {
+        id: 1,
+        name: "Caramel Macchiato",
+        size: "Grande (12 oz)",
+        milk: "Oat Milk (Barista Blend)",
+        sugar: "50% Mild",
+        unitPrice: 5.50,
+        qty: 1
+      },
+      {
+        id: 3,
+        name: "Normandy Croissant",
+        size: "Single Piece",
+        milk: "Classic (No Spread)",
+        sugar: "Warm & Crisp",
+        unitPrice: 3.90,
+        qty: 1
+      }
+    ];
+
+    let activeOrder = null; // null or { orderId: "#BK-12345", wait: "25 mins" }
+
+    let currentItem = storeData.items[0];
+    let selectedSizeIdx = 1;
+    let selectedMilkIdx = 0;
+    let selectedSugarIdx = 1;
+    let detailQty = 1;
+
+    function setScreen(screenName) {
+      document.querySelectorAll('.screen-view').forEach(v => v.classList.add('hidden'));
+      const target = document.getElementById(`view-${screenName}`);
+      if (target) target.classList.remove('hidden');
+
+      // Top control buttons
+      document.querySelectorAll('.screen-btn').forEach(btn => {
+        btn.classList.remove('bg-[#d9532f]', 'text-white', 'glow-terracotta');
+        btn.classList.add('bg-[#26160e]', 'text-[#ebd8cb]');
+      });
+      const topBtn = document.getElementById(`btn-${screenName}`);
+      if (topBtn) {
+        topBtn.classList.remove('bg-[#26160e]', 'text-[#ebd8cb]');
+        topBtn.classList.add('bg-[#d9532f]', 'text-white', 'glow-terracotta');
+      }
+
+      updateHomeBanner();
+      renderCart();
+    }
+
+    function updateHomeBanner() {
+      const iconBox = document.getElementById('home-banner-icon-box');
+      const tag = document.getElementById('home-banner-tag');
+      const main = document.getElementById('home-banner-main');
+      const sub = document.getElementById('home-banner-sub');
+      const action = document.getElementById('home-banner-action');
+
+      if (activeOrder) {
+        iconBox.innerHTML = "🟢";
+        tag.innerText = "ACTIVE ORDER";
+        tag.className = "text-[9px] font-black uppercase tracking-wider text-emerald-600";
+        main.innerText = `Active Order ${activeOrder.orderId}`;
+        sub.innerText = `Preparing (Arriving in ${activeOrder.wait})`;
+        action.innerText = "Track";
+        action.className = "px-2.5 py-1 rounded-lg bg-emerald-600 text-white text-[10px] font-bold";
+      } else {
+        iconBox.innerHTML = "🛵";
+        tag.innerText = "STORE INFO";
+        tag.className = "text-[9px] font-black uppercase tracking-wider text-[#d9532f]";
+        main.innerText = "Delivery in 20 - 30 mins";
+        sub.innerText = "$2.50 flat fee";
+        action.innerText = "Open";
+        action.className = "px-2.5 py-1 rounded-lg bg-white border border-[#ebd8cb] text-[10px] font-bold text-[#140b07]";
+      }
+    }
+
+    function renderCatalog(filteredItems = storeData.items) {
+      const container = document.getElementById('catalog-items-container');
+      container.innerHTML = '';
+
+      filteredItems.forEach(it => {
+        const card = document.createElement('div');
+        card.className = "p-2.5 rounded-xl bg-white border border-[#ebd8cb] flex gap-2.5 items-center shadow-sm hover:border-[#d9532f] transition cursor-pointer btn-press";
+        card.onclick = () => openDetail(it.id);
+
+        card.innerHTML = `
+          <div class="w-14 h-14 rounded-lg bg-cover bg-center flex-shrink-0" style="background-image: url('${it.image_url}');"></div>
+          <div class="flex-1 min-w-0">
+            <span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-amber-100 text-amber-900">${it.badge}</span>
+            <strong class="text-xs text-[#140b07] block truncate">${it.name}</strong>
+            <span class="text-[10px] text-[#786457]">⭐ ${it.rating} (${it.reviews})</span>
+            <div class="flex items-center justify-between mt-1">
+              <strong class="text-xs text-[#d9532f] font-mono">$${it.base_price.toFixed(2)}</strong>
+              <button class="px-2 py-0.5 rounded-md bg-[#d9532f] text-white text-[10px] font-bold">+ Customize</button>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function filterCategory(catId) {
+      document.querySelectorAll('.cat-filter-btn').forEach(b => {
+        b.className = 'cat-filter-btn px-3 py-1.5 rounded-full bg-white border border-[#ebd8cb] text-[#786457] font-semibold whitespace-nowrap btn-press';
+      });
+      const activeBtn = document.getElementById(`cat-${catId}`);
+      if (activeBtn) {
+        activeBtn.className = 'cat-filter-btn px-3 py-1.5 rounded-full bg-[#140b07] text-white font-bold whitespace-nowrap btn-press';
+      }
+
+      if (catId === 'ALL') {
+        renderCatalog(storeData.items);
+      } else {
+        const filtered = storeData.items.filter(it => it.category_id === catId);
+        renderCatalog(filtered);
+      }
+    }
+
+    function filterMenuSearch() {
+      const q = document.getElementById('menu-search-input').value.toLowerCase();
+      const filtered = storeData.items.filter(it => it.name.toLowerCase().includes(q) || it.desc.toLowerCase().includes(q));
+      renderCatalog(filtered);
+    }
+
+    // Open Screen 2 Item Detail with exact API Customizations
+    function openDetail(itemId) {
+      const item = storeData.items.find(x => x.id === itemId) || storeData.items[0];
+      currentItem = item;
+      selectedSizeIdx = 0;
+      selectedMilkIdx = 0;
+      selectedSugarIdx = 0;
+      detailQty = 1;
+
+      document.getElementById('detail-hero-img').src = item.image_url;
+      document.getElementById('detail-hero-badge').innerText = item.badge;
+      document.getElementById('detail-item-name').innerText = item.name;
+      document.getElementById('detail-base-price').innerText = `$${item.base_price.toFixed(2)}`;
+      document.getElementById('detail-item-desc').innerText = item.desc;
+      document.getElementById('detail-qty-display').innerText = detailQty;
+
+      // Ingredients
+      const ingRow = document.getElementById('detail-ingredients-row');
+      ingRow.innerHTML = '';
+      item.ingredients.forEach(ing => {
+        const chip = document.createElement('span');
+        chip.className = 'text-[9px] px-2 py-0.5 rounded-md bg-white border border-[#ebd8cb] text-[#786457]';
+        chip.innerText = ing;
+        ingRow.appendChild(chip);
+      });
+
+      // 1. Sizes
+      const sizesRow = document.getElementById('detail-sizes-row');
+      sizesRow.innerHTML = '';
+      item.customizations.sizes.forEach((sz, idx) => {
+        const btn = document.createElement('button');
+        btn.className = `p-2 rounded-lg text-[10px] font-bold border transition ${idx === selectedSizeIdx ? 'bg-[#f7ebe1] border-[#d9532f] text-[#d9532f]' : 'bg-white border-[#ebd8cb] text-[#786457]'}`;
+        btn.innerHTML = `${sz.label}<br><span class="text-[9px] opacity-80">+${sz.extra_price > 0 ? '$' + sz.extra_price.toFixed(2) : '$0.00'}</span>`;
+        btn.onclick = () => {
+          selectedSizeIdx = idx;
+          updateDetailTotal();
+          openDetail(item.id);
+        };
+        sizesRow.appendChild(btn);
+      });
+
+      // 2. Milk Options
+      const milkRow = document.getElementById('detail-milk-row');
+      milkRow.innerHTML = '';
+      item.customizations.milk_options.forEach((m, idx) => {
+        const row = document.createElement('div');
+        row.className = `flex justify-between items-center p-2 rounded-lg border text-xs cursor-pointer ${idx === selectedMilkIdx ? 'bg-[#f7ebe1] border-[#d9532f] text-[#d9532f] font-bold' : 'bg-white border-[#ebd8cb] text-[#786457]'}`;
+        row.innerHTML = `<span>${m.name}</span><span class="font-mono text-[10px]">+${m.extra_price > 0 ? '$' + m.extra_price.toFixed(2) : '$0.00'}</span>`;
+        row.onclick = () => {
+          selectedMilkIdx = idx;
+          updateDetailTotal();
+          openDetail(item.id);
+        };
+        milkRow.appendChild(row);
+      });
+
+      // 3. Sugar Levels
+      const sugarRow = document.getElementById('detail-sugar-row');
+      sugarRow.innerHTML = '';
+      item.customizations.sugar_levels.forEach((s, idx) => {
+        const chip = document.createElement('button');
+        chip.className = `px-2.5 py-1.5 rounded-lg text-[10px] font-bold border ${idx === selectedSugarIdx ? 'bg-[#140b07] text-white border-[#140b07]' : 'bg-white text-[#786457] border-[#ebd8cb]'}`;
+        chip.innerText = s;
+        chip.onclick = () => {
+          selectedSugarIdx = idx;
+          updateDetailTotal();
+          openDetail(item.id);
+        };
+        sugarRow.appendChild(chip);
+      });
+
+      updateDetailTotal();
+      setScreen('detail');
+    }
+
+    function updateDetailTotal() {
+      const base = currentItem.base_price;
+      const sizeExtra = currentItem.customizations.sizes[selectedSizeIdx]?.extra_price || 0;
+      const milkExtra = currentItem.customizations.milk_options[selectedMilkIdx]?.extra_price || 0;
+      const total = (base + sizeExtra + milkExtra) * detailQty;
+      document.getElementById('detail-calc-total-btn').innerText = `$${total.toFixed(2)}`;
+    }
+
+    function adjustDetailQty(delta) {
+      detailQty = Math.max(1, detailQty + delta);
+      document.getElementById('detail-qty-display').innerText = detailQty;
+      updateDetailTotal();
+    }
+
+    function addToCartFromDetail() {
+      const base = currentItem.base_price;
+      const sizeObj = currentItem.customizations.sizes[selectedSizeIdx] || currentItem.customizations.sizes[0];
+      const milkObj = currentItem.customizations.milk_options[selectedMilkIdx] || currentItem.customizations.milk_options[0];
+      const sugarVal = currentItem.customizations.sugar_levels[selectedSugarIdx] || currentItem.customizations.sugar_levels[0];
+      const unit = base + (sizeObj.extra_price || 0) + (milkObj.extra_price || 0);
+
+      cart.push({
+        id: currentItem.id,
+        name: currentItem.name,
+        size: sizeObj.label,
+        milk: milkObj.name,
+        sugar: sugarVal,
+        unitPrice: unit,
+        qty: detailQty
+      });
+
+      showToast(`Added ${detailQty}x ${currentItem.name} to Cart`);
+      setScreen('cart');
+    }
+
+    function renderCart() {
+      const container = document.getElementById('cart-items-list');
+      container.innerHTML = '';
+
+      let subtotal = 0;
+      let totalQty = 0;
+
+      if (cart.length === 0) {
+        container.innerHTML = `
+          <div class="p-6 text-center text-xs text-[#786457] bg-white rounded-xl border border-[#ebd8cb]">
+            <i class="fa-solid fa-cart-shopping text-2xl text-[#ebd8cb] mb-2 block"></i>
+            Your in-memory cart is empty.
+          </div>
+        `;
+      }
+
+      cart.forEach((it, index) => {
+        const itemTotal = it.unitPrice * it.qty;
+        subtotal += itemTotal;
+        totalQty += it.qty;
+
+        const row = document.createElement('div');
+        row.className = "p-2.5 rounded-xl bg-white border border-[#ebd8cb] flex items-center justify-between text-xs";
+        row.innerHTML = `
+          <div>
+            <strong class="text-xs text-[#140b07] block">${it.name}</strong>
+            <span class="text-[10px] text-[#786457]">${it.size} • ${it.milk || ''}</span>
+            <div class="text-[11px] font-bold text-[#d9532f] font-mono mt-0.5">$${itemTotal.toFixed(2)}</div>
+          </div>
+          <div class="flex items-center gap-2 bg-[#f7ebe1] px-2 py-1 rounded-lg border border-[#ebd8cb]">
+            <button onclick="changeCartQty(${index}, -1)" class="text-xs font-bold text-[#140b07]">-</button>
+            <span class="text-xs font-bold text-[#140b07] font-mono">${it.qty}</span>
+            <button onclick="changeCartQty(${index}, 1)" class="text-xs font-bold text-[#140b07]">+</button>
+          </div>
+        `;
+        container.appendChild(row);
+      });
+
+      document.getElementById('badge-cart-counter').innerText = totalQty;
+      document.getElementById('top-cart-count').innerText = totalQty;
+      document.getElementById('floating-bar-qty').innerText = totalQty;
+
+      const stickyBar = document.getElementById('sticky-cart-bar');
+      if (stickyBar) {
+        stickyBar.style.display = totalQty > 0 ? 'flex' : 'none';
+      }
+
+      const delivery = subtotal > 0 ? storeData.meta.delivery_fee : 0;
+      const tax = subtotal * (storeData.meta.tax_rate_percent / 100);
+      const total = subtotal > 0 ? subtotal + delivery + tax : 0;
+
+      document.getElementById('bill-subtotal').innerText = `$${subtotal.toFixed(2)}`;
+      document.getElementById('bill-tax').innerText = `$${tax.toFixed(2)}`;
+      document.getElementById('bill-total').innerText = `$${total.toFixed(2)}`;
+      document.getElementById('floating-bar-subtotal').innerText = `$${subtotal.toFixed(2)}`;
+      document.getElementById('btn-place-order-total').innerText = `$${total.toFixed(2)}`;
+    }
+
+    function changeCartQty(index, delta) {
+      cart[index].qty += delta;
+      if (cart[index].qty <= 0) {
+        cart.splice(index, 1);
+      }
+      renderCart();
+    }
+
+    function clearCart() {
+      cart = [];
+      renderCart();
+      showToast('Cart cleared');
+    }
+
+    function placeOrderFinal() {
+      if (cart.length === 0) {
+        showToast('Cart is empty!');
+        return;
+      }
+      
+      const totalCount = cart.reduce((acc, it) => acc + it.qty, 0);
+      const code = `#BK-${Math.floor(10000 + Math.random() * 90000)}`;
+      document.getElementById('order-summary-qty').innerText = `${totalCount} Item(s)`;
+      document.getElementById('order-ref-code').innerText = code;
+
+      // Set Active Order tracking state for Home banner
+      activeOrder = {
+        orderId: code,
+        wait: "25 mins"
+      };
+
+      // Reset cart automatically
+      cart = [];
+      renderCart();
+
+      showToast('🎉 Order Placed! Cart cleared.');
+      setScreen('order');
+    }
+
+    function resetPrototype() {
+      activeOrder = null;
+      cart = [
+        {
+          id: 1,
+          name: "Caramel Macchiato",
+          size: "Grande (12 oz)",
+          milk: "Oat Milk (Barista Blend)",
+          sugar: "50% Mild",
+          unitPrice: 5.50,
+          qty: 1
+        },
+        {
+          id: 3,
+          name: "Normandy Croissant",
+          size: "Single Piece",
+          milk: "Classic (No Spread)",
+          sugar: "Warm & Crisp",
+          unitPrice: 3.90,
+          qty: 1
+        }
+      ];
+      renderCart();
+      setScreen('menu');
+      showToast('Reset to default prototype state');
+    }
+
+    function toggleFavorite() {
+      const icon = document.getElementById('fav-icon');
+      icon.classList.toggle('text-rose-500');
+      icon.classList.toggle('text-[#786457]');
+      showToast('Item saved to favorites');
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-text').innerText = msg;
+      toast.classList.remove('-translate-y-24', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('-translate-y-24', 'opacity-0');
+      }, 2200);
+    }
+
+    function copyRichText(elementId, btnElement, toastMsg) {
+      const text = document.getElementById(elementId).innerText.trim();
+      navigator.clipboard.writeText(text).then(() => {
+        showToast(toastMsg || 'Copied to clipboard!');
+        if (btnElement) {
+          const originalHTML = btnElement.innerHTML;
+          btnElement.innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i> <span>Copied!</span>`;
+          btnElement.classList.add('bg-emerald-700');
+          setTimeout(() => {
+            btnElement.innerHTML = originalHTML;
+            btnElement.classList.remove('bg-emerald-700');
+          }, 2000);
+        }
+      });
+    }
+
+    function copyDirectValue(val, btnElement, toastMsg) {
+      navigator.clipboard.writeText(val).then(() => {
+        showToast(toastMsg || 'Copied!');
+        if (btnElement) {
+          const originalHTML = btnElement.innerHTML;
+          btnElement.innerHTML = `<i class="fa-solid fa-check text-emerald-400 text-xs"></i>`;
+          setTimeout(() => {
+            btnElement.innerHTML = originalHTML;
+          }, 2000);
+        }
+      });
+    }
+
+    function copyToClipboard(id) {
+      const text = document.getElementById(id).innerText.trim();
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('Copied URL to clipboard!');
+      });
+    }
+
+    // Init
+    renderCatalog();
+    renderCart();
+    setScreen('menu');
+  </script>
+</body>
+</html>
