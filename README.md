@@ -1,9 +1,9 @@
 # Brewkery: Coffee & Bakery Ordering App ☕🥐
 
 Native Android ordering application built with **Kotlin** and **Jetpack Compose**, implementing a 4-screen ordering flow for an artisan coffee and bakery shop as part of the **Clickretina Android Developer Assessment**.
----
-Link : https://drive.google.com/file/d/1o51UIL-mumWp4ykq2E8A5pUPu2k_UmuH/view?usp=sharing
 
+Link : https://drive.google.com/file/d/1o51UIL-mumWp4ykq2E8A5pUPu2k_UmuH/view?usp=sharing
+---
 
 ## 1. Overview & Flow
 
