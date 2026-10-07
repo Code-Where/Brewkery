@@ -1,8 +1,6 @@
 # Brewkery: Coffee & Bakery Ordering App ☕🥐
 
 Native Android ordering application built with **Kotlin** and **Jetpack Compose**, implementing a 4-screen ordering flow for an artisan coffee and bakery shop as part of the **Clickretina Android Developer Assessment**.
-
-Link : https://drive.google.com/file/d/1o51UIL-mumWp4ykq2E8A5pUPu2k_UmuH/view?usp=sharing
 ---
 
 ## 1. Overview & Flow
@@ -113,7 +111,7 @@ com.clickretina.brewkery
 
 ### APK Location:
 The generated debug APK is located at:
-`app/build/outputs/apk/debug/app-debug.apk`
+https://drive.google.com/file/d/1o51UIL-mumWp4ykq2E8A5pUPu2k_UmuH/view?usp=sharing
 
 ---
 
@@ -138,9 +136,8 @@ The generated debug APK is located at:
 - **Google Antigravity** (Gemini 3.8 Flash High) for full-lifecycle pair programming, test creation, and architectural validation.
 
 ### Real Prompts Used
-1. *"Read docs/PRD.md §2 and §3. Add Retrofit, OkHttp, kotlinx.serialization, Coil, Navigation Compose to the Gradle version catalog and app/build.gradle.kts. Add the INTERNET permission."*
-2. *"Implement CalculateOrderSummary per PRD §4.2 using BigDecimal with HALF_UP tax, then write JUnit tests for every row in PRD §10."*
-3. *"Implement the data layer and repository with in-memory caching fallback, then build the 4 Compose screens matching the prototype at https://vivekshah138.github.io/Brewkery/."*
+1. *"Implement CalculateOrderSummary per PRD §4.2 using BigDecimal with HALF_UP tax, then write JUnit tests for every row in PRD §10."*
+2. *"Implement the data layer and repository with in-memory caching fallback, then build the 4 Compose screens matching the prototype at https://vivekshah138.github.io/Brewkery/."*
 
 ### What AI Got Right
 - **Accurate Domain & DTO Layer Scaffolding:** Generated clean, type-safe `@Serializable` DTOs with nullable fallbacks and cleanly mapped them to immutable domain entities in one pass.
@@ -161,5 +158,5 @@ The generated debug APK is located at:
 
 ## 6. What I'd Do Next
 - **Room / DataStore Persistence:** Persist active order and cart state across process death.
-- **Compose UI Testing:** Automated end-to-end UI tests covering `Add to Cart` to `Place Order` with Compose Test Rule.
+- 
 - **Dark Theme Palette:** Expand the warm coffee palette to an espresso-dark mode.
